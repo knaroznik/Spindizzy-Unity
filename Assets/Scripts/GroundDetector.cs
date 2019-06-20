@@ -5,14 +5,24 @@ using UnityEngine;
 public class GroundDetector : MonoBehaviour
 {
     public Gerald mainObject;
-    
-    void OnTriggerEnter(Collider other)
+
+    private float distToGround;
+    private bool grounded;
+
+    private void Start()
     {
-        mainObject.rb.useGravity = false;
+        distToGround = GetComponent<BoxCollider>().bounds.extents.y;
     }
 
-    void OnTriggerExit(Collider other)
+    private void Update()
     {
-        mainObject.rb.useGravity = true;
+        bool updateGrounded = Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+
+        if(updateGrounded != grounded)
+        {
+            grounded = updateGrounded;
+
+            mainObject.rb.useGravity = !grounded;
+        }
     }
 }
