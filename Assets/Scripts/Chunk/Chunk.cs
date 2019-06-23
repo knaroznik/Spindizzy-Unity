@@ -9,13 +9,23 @@ public class Chunk : MonoBehaviour
     public Chunk SouthChunk;
     public Chunk WestChunk;
 
-    public void Activate()
+    public IEnumerator Activate()
     {
         this.gameObject.SetActive(true);
+        for(int i=0; i<8; i++)
+        {
+            this.transform.GetChild(i).gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.05f);
+        }
     }
 
-    public void DeActivate()
+    public IEnumerator DeActivate()
     {
+        for (int i = 0; i < 8; i++)
+        {
+            this.transform.GetChild(i).gameObject.SetActive(false);
+            yield return new WaitForSeconds(0.05f);
+        }
         this.gameObject.SetActive(false);
     }
 }

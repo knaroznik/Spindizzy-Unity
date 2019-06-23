@@ -22,7 +22,7 @@ public class GroundDetector : MonoBehaviour
         {
             grounded = updateGrounded;
 
-            mainObject.rb.useGravity = !grounded;
+            mainObject.ChangeGravity(!grounded);
         }
     }
 }

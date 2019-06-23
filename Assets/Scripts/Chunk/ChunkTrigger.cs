@@ -4,15 +4,34 @@ using UnityEngine;
 
 public class ChunkTrigger : MonoBehaviour
 {
-    public int direction;
 
-    private void OnTriggerEnter(Collider other)
+    ChunkController chunkController;
+
+    private void Start()
+    {
+        chunkController = transform.GetComponentInParent<ChunkController>();
+    }
+
+    private void OnTriggerExit(Collider other)
     {
         if(other.tag == "Player")
         {
-            Debug.Log("XD");
-            transform.GetComponentInParent<ChunkController>().ChangeChunk(direction);
+            if(other.transform.position.z > this.transform.position.z + 4f)
+            {
+                chunkController.ChangeChunk(0);
+            }
+            else if (other.transform.position.z < this.transform.position.z - 4f)
+            {
+                chunkController.ChangeChunk(2);
+            }
+            else if(other.transform.position.x > this.transform.position.x + 4f)
+            {
+                chunkController.ChangeChunk(1);
+            }
+            else if (other.transform.position.x < this.transform.position.x - 4f)
+            {
+                chunkController.ChangeChunk(3);
+            }
         }
-        
     }
 }

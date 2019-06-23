@@ -19,27 +19,29 @@ public class ChunkController : MonoBehaviour
 
     public void ChangeChunk(int direction)
     {
-        //Zmienić na korutynkę
+        StartCoroutine(IChangeChunk(direction));   
+    }
 
+    private IEnumerator IChangeChunk(int direction)
+    {
         Vector3 velocity = gerald.rb.velocity;
         gerald.rb.velocity = Vector3.zero;
-        activeChunk.DeActivate();
+        gerald.GetComponent<Movement>().enabled = false;
 
-        if(nextChunks[direction] == null)
-        {
-            Debug.Log("LOST");
-            return;
-        }
+        yield return StartCoroutine(activeChunk.DeActivate()); //KORUTYNA
 
         activeChunk = nextChunks[direction];
 
-        this.gameObject.transform.position = activeChunk.transform.position;
         mainCamera.transform.position = activeChunk.transform.position + cameraOffset;
-
-        activeChunk.Activate();
+        yield return StartCoroutine(activeChunk.Activate());
         nextChunks = new Chunk[4] { activeChunk.NorthChunk, activeChunk.EastChunk, activeChunk.SouthChunk, activeChunk.WestChunk };
 
-        gerald.transform.position += velocity.normalized * 0.5f;
+        this.gameObject.transform.position = activeChunk.transform.position;
+
+
+
+        //Włączenie
         gerald.rb.velocity = velocity;
+        gerald.GetComponent<Movement>().enabled = true;
     }
 }

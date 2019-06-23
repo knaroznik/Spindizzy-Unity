@@ -10,4 +10,9 @@ public class Gerald : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
     }
+
+    public void ChangeGravity(bool _value)
+    {
+        rb.useGravity = _value;
+    }
 }
