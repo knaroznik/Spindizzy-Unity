@@ -5,6 +5,8 @@ using UnityEngine;
 public class Gerald : MonoBehaviour
 {
 
+    public int points = 0;
+
     float x;
     float y;
 
