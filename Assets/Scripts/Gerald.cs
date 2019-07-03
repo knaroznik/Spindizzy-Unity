@@ -11,13 +11,13 @@ public class Gerald : MonoBehaviour
     float y;
 
     Vector3 rawForward;
+    Vector3 calculatedForward;
 
     public bool grounded;
     public RaycastHit hitInfo;
     public LayerMask layerMask;
 
     public Rigidbody rb;
-    private float slowDown = 0.9f;
 
     private GeraldGravity gravity = new GeraldGravity();
 
@@ -29,9 +29,15 @@ public class Gerald : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         CheckGround();
+
+        GetInput();
+        CalculateForward();
         Move();
 
+
+        Debug.DrawLine(transform.position, transform.position + calculatedForward, Color.red);
         gravity.Update(this.gameObject, grounded);
 
     }
@@ -44,46 +50,68 @@ public class Gerald : MonoBehaviour
         {
             grounded = updateGrounded;
         }
+
+
+        if(grounded && Vector3.Distance(transform.position, hitInfo.point) < 0.5f)
+        {
+            float add = 0.5f - Vector3.Distance(transform.position, hitInfo.point);
+            this.transform.position += new Vector3(0, add, 0);
+        }
     }
 
-    private void Move()
+
+    private void GetInput()
     {
         x = Input.GetAxisRaw("Horizontal");
         y = Input.GetAxisRaw("Vertical");
 
 
-        rawForward = new Vector3(x, 0f, y);
-        Vector3 newMovement = rawForward;
-        if (grounded)
+        Vector3 input = new Vector3(x, 0f, y);
+        if (input != Vector3.zero)
+        {
+            rawForward = input;
+        }
+    }
+
+    private void CalculateForward()
+    {
+        calculatedForward = rawForward;
+        if(grounded)
         {
             Vector3 temp;
             temp = Quaternion.Euler(new Vector3(0, 90, 0)) * rawForward; //Vector right
             temp = Vector3.Cross(temp, hitInfo.normal);
-            if(temp.x >=0 && temp.y >= 0 && temp.z >= 0)
+            if (temp.x >= 0 && temp.y >= 0 && temp.z >= 0)
             {
-                newMovement = temp;
+                calculatedForward = temp;
+            }
+        }
+    }
+
+    private void Move()
+    {
+        if(x != 0 || y != 0)
+        {
+            rb.AddForce(calculatedForward * 10);
+        }
+        
+    }
+
+    //Zjeżdzanie z wyskoczni TODO
+    private void DefaultSlow()
+    {
+
+        if (grounded && x== 0 && y == 0)
+        {
+            if (Vector3.Angle(Vector3.up, hitInfo.normal) > 20 && rb.velocity.magnitude < 1)
+            {
+                Debug.Log("XD");
+                Vector3 temp = Quaternion.Euler(90, 180, 0) * calculatedForward;
+                Debug.DrawLine(transform.position, transform.position + temp, Color.green);
+                rb.velocity = new Vector3(temp.x, 0, temp.z);
             }
         }
 
-        Debug.DrawLine(transform.position, transform.position + newMovement, Color.red);
-
-        rb.AddForce(newMovement * 10);
-    }
-
-    private void DefaultSlow()
-    {
-        float newX = rb.velocity.x, newZ = rb.velocity.z;
-
-        if(x == 0)
-        {
-            newX = rb.velocity.x * slowDown;
-        }
-
-        if(y== 0)
-        {
-            newZ = rb.velocity.z * slowDown;
-        }
-
-        rb.velocity = new Vector3(newX, 0, newZ);
+        
     }
 }

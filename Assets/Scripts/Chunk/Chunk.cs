@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Chunk : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class Chunk : MonoBehaviour
     public Chunk EastChunk;
     public Chunk SouthChunk;
     public Chunk WestChunk;
+
+    public bool Drawn = false;
+    public bool Visited = false;
+    public Image chunkImage;
 
     public IEnumerator Activate()
     {
